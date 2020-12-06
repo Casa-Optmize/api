@@ -1,0 +1,37 @@
+version: '3.7'
+
+services:
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    image: app
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '3000:3000'
+    restart: always
+    networks:
+      - challenger_network
+    depends_on:
+      - mysql
+  mysql:
+        container_name: mysql
+        image: mysql
+        restart: always
+        ports:
+            - "3310:3306"
+        networks:
+            - challenger_network
+        environment:
+            MYSQL_HOST: mysql
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: challenger
+        security_opt:
+            - seccomp:unconfined
+
+networks:
+    challenger_network:
+        driver: bridge
